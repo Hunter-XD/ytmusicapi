@@ -21,7 +21,7 @@ def parse_chart_song(data):
     else:
         flex_1 = get_flex_column_item(data, 1)
         parsed['views'] = nav(flex_1, ['text', 'runs', -1, 'text']).split(' ')[0]
-    parsed.update(parse_ranking(data))
+    parsed |= parse_ranking(data)
     return parsed
 
 
@@ -36,7 +36,7 @@ def parse_chart_artist(data):
         'subscribers': subscribers,
         'thumbnails': nav(data, THUMBNAILS),
     }
-    parsed.update(parse_ranking(data))
+    parsed |= parse_ranking(data)
     return parsed
 
 

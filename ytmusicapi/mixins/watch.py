@@ -53,7 +53,7 @@ class WatchMixin:
         if videoId:
             body['videoId'] = videoId
             if not playlistId:
-                playlistId = "RDAMVM" + videoId
+                playlistId = f"RDAMVM{videoId}"
             if not params:
                 body['watchEndpointMusicSupportedConfigs'] = {
                     'watchEndpointMusicConfig': {

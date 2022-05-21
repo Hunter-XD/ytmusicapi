@@ -91,6 +91,6 @@ def parse_playlist_items(results, menu_entries: List[List] = None):
             songs.append(song)
 
         except Exception as e:
-            print("Item " + str(count) + ": " + str(e))
+            print(f"Item {count}: {str(e)}")
 
     return songs

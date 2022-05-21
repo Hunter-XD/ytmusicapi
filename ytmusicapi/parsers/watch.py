@@ -32,7 +32,7 @@ def parse_watch_playlist(results):
             'feedbackTokens': feedback_tokens,
             'likeStatus': like_status
         }
-        track.update(song_info)
+        track |= song_info
         tracks.append(track)
 
     return tracks

@@ -29,10 +29,10 @@ def validate_order_parameter(order):
 
 
 def prepare_order_params(order):
-    orders = ['a_to_z', 'z_to_a', 'recently_added']
     if order is not None:
         # determine order_params via `.contents.singleColumnBrowseResultsRenderer.tabs[0].tabRenderer.content.sectionListRenderer.contents[1].itemSectionRenderer.header.itemSectionTabbedHeaderRenderer.endItems[1].dropdownRenderer.entries[].dropdownItemRenderer.onSelectCommand.browseEndpoint.params` of `/youtubei/v1/browse` response
         order_params = ['ggMGKgQIARAA', 'ggMGKgQIARAB', 'ggMGKgQIABAB']
+        orders = ['a_to_z', 'z_to_a', 'recently_added']
         return order_params[orders.index(order)]
 
 
@@ -87,8 +87,8 @@ def sapisid_from_cookie(raw_cookie):
 def get_authorization(auth):
     sha_1 = sha1()
     unix_timestamp = str(int(time.time()))
-    sha_1.update((unix_timestamp + ' ' + auth).encode('utf-8'))
-    return "SAPISIDHASH " + unix_timestamp + "_" + sha_1.hexdigest()
+    sha_1.update(f'{unix_timestamp} {auth}'.encode('utf-8'))
+    return f"SAPISIDHASH {unix_timestamp}_{sha_1.hexdigest()}"
 
 
 def get_datestamp():
@@ -109,13 +109,13 @@ def parse_duration(duration):
     if duration is None:
         return duration
     mapped_increments = zip([1, 60, 3600], reversed(duration.split(":")))
-    seconds = sum(multiplier * int(time) for multiplier, time in mapped_increments)
-    return seconds
+    return sum(multiplier * int(time) for multiplier, time in mapped_increments)
 
 
 def sum_total_duration(item):
     return sum(
-        [track['duration_seconds'] if 'duration_seconds' in track else 0 for track in item['tracks']]
+        track['duration_seconds'] if 'duration_seconds' in track else 0
+        for track in item['tracks']
     )
 
 

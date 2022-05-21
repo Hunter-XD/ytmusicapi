@@ -28,8 +28,9 @@ def parse_album_header(response):
     album['audioPlaylistId'] = nav(toplevel, [0, 'buttonRenderer'] + NAVIGATION_WATCH_PLAYLIST_ID, True)
     if not album['audioPlaylistId']:
         album['audioPlaylistId'] = nav(toplevel, [0, 'buttonRenderer'] + NAVIGATION_PLAYLIST_ID, True)
-    service = nav(toplevel, [1, 'buttonRenderer', 'defaultServiceEndpoint'], True)
-    if service:
+    if service := nav(
+        toplevel, [1, 'buttonRenderer', 'defaultServiceEndpoint'], True
+    ):
         album['likeStatus'] = parse_like_status(service)
 
     return album

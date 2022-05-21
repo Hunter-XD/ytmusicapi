@@ -5,17 +5,20 @@ def parse_menu_playlists(data, result):
     watch_menu = find_objects_by_key(nav(data, MENU_ITEMS), 'menuNavigationItemRenderer')
     for item in [_x['menuNavigationItemRenderer'] for _x in watch_menu]:
         icon = nav(item, ['icon', 'iconType'])
-        if icon == 'MUSIC_SHUFFLE':
-            watch_key = 'shuffleId'
-        elif icon == 'MIX':
+        if icon == 'MIX':
             watch_key = 'radioId'
+        elif icon == 'MUSIC_SHUFFLE':
+            watch_key = 'shuffleId'
         else:
             continue
 
-        watch_id = nav(item, ['navigationEndpoint', 'watchPlaylistEndpoint', 'playlistId'], True)
-        if not watch_id:
-            watch_id = nav(item, ['navigationEndpoint', 'watchEndpoint', 'playlistId'], True)
-        if watch_id:
+        if watch_id := nav(
+            item,
+            ['navigationEndpoint', 'watchPlaylistEndpoint', 'playlistId'],
+            True,
+        ) or nav(
+            item, ['navigationEndpoint', 'watchEndpoint', 'playlistId'], True
+        ):
             result[watch_key] = watch_id
 
 
@@ -98,21 +101,32 @@ def get_parsed_continuation_items(response, parse_func, continuation_type):
 
 
 def get_continuation_params(results, ctoken_path):
-    ctoken = nav(results,
-                 ['continuations', 0, 'next' + ctoken_path + 'ContinuationData', 'continuation'])
+    ctoken = nav(
+        results,
+        [
+            'continuations',
+            0,
+            f'next{ctoken_path}ContinuationData',
+            'continuation',
+        ],
+    )
+
     return get_continuation_string(ctoken)
 
 
 def get_continuation_string(ctoken):
-    return "&ctoken=" + ctoken + "&continuation=" + ctoken
+    return f"&ctoken={ctoken}&continuation={ctoken}"
 
 
 def get_continuation_contents(continuation, parse_func):
-    for term in ['contents', 'items']:
-        if term in continuation:
-            return parse_func(continuation[term])
-
-    return []
+    return next(
+        (
+            parse_func(continuation[term])
+            for term in ['contents', 'items']
+            if term in continuation
+        ),
+        [],
+    )
 
 
 def resend_request_until_parsed_response_is_valid(request_func, request_additional_params,
@@ -139,7 +153,7 @@ def validate_response(response, per_page, limit, current_count):
 
 
 def validate_playlist_id(playlistId):
-    return playlistId if not playlistId.startswith("VL") else playlistId[2:]
+    return playlistId[2:] if playlistId.startswith("VL") else playlistId
 
 
 def nav(root, items, none_if_absent=False):
